@@ -8,13 +8,14 @@ chrome.runtime.onMessage.addListener(
   });
 
 function sendTextSelectMessage() {
-	alert('sentMessage');
+	console.log('whereami?');
 	chrome.tabs.getSelected(null, function(tab) {
 	  chrome.tabs.sendMessage(tab.id, {greeting: "hello"}, function(response) {
-	    console.log(response.farewell);
+	  	console.log(response.farewell);
 	  });
 	});
 }
+
 
 
 // // Called when a message is passed.  We assume that the content script

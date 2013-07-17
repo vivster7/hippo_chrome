@@ -9,6 +9,15 @@ if (regex.test(document.body.innerText)) {
   // No match was found.
 }
 
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    console.log(sender.tab ?
+                "from a content script:" + sender.tab.url :
+                "from the extension");
+    if (request.greeting == "hello")
+      sendResponse({farewell: "goodbye"});
+  });
+
 
 // function getSelectionHtml() {
 //     var html = "";
@@ -28,3 +37,4 @@ if (regex.test(document.body.innerText)) {
 //     }
 //     alert(html);
 // }
+
