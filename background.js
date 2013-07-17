@@ -8,10 +8,26 @@ chrome.runtime.onMessage.addListener(
   });
 
 function sendTextSelectMessage() {
-	console.log('whereami?');
 	chrome.tabs.getSelected(null, function(tab) {
-	  chrome.tabs.sendMessage(tab.id, {message: "grabText"}, function(response) {});
+	  chrome.tabs.sendMessage(tab.id, {message: "grabText"}, function(response) {
+	  	alert(response);
+	  	sendToService();
+	  	alert("somethingHappened")
+	  });
 	});
+}
+
+function sendToService() {
+	var params = "email[text]=Thisisatest"
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST','http://privacy.omadahealth.com:3000/emails', true);
+	xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState == 4 && xhr.status == 200) {
+			alert(xhr.responseText);
+		}
+	}
+	xhr.send(params);
 }
 
 // // Called when a message is passed.  We assume that the content script

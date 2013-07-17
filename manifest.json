@@ -10,7 +10,9 @@
   },
 
   "permissions": [
-  	"tabs", "http://*/*"
+  	"tabs", 
+    "http://*/*",
+    "<all_urls>"
   ],
 
   "page_action": {

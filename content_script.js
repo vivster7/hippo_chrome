@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener(
                 "from the extension");
     if (request.message == "grabText")
       console.log("stuffz:" + getSelectionHtml());
-      sendResponse();
+      sendResponse(getSelectionHtml());
   });
 
 
