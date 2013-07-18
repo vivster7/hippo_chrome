@@ -7,38 +7,40 @@ chrome.runtime.onMessage.addListener(
       sendResponse({});
   });
 
+//Sends content_scripts the message to grabText
 function sendTextSelectMessage() {
 	chrome.tabs.getSelected(null, function(tab) {
 	  chrome.tabs.sendMessage(tab.id, {message: "grabText"}, function(response) {
-	  	alert(response);
-	  	sendToService();
-	  	alert("somethingHappened")
+	  	//alert(response);
+	  	sendToService(response);
 	  });
 	});
 }
 
-function sendToService() {
-	var params = "email[text]=Thisisatest"
+//Sends HippoService the selected text
+function sendToService(response) {
+	var params = "email[text]="+response
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST','http://privacy.omadahealth.com:3000/emails', true);
 	xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState == 4 && xhr.status == 200) {
-			alert(xhr.responseText);
+			callDisplayImageInEmail(xhr.responseText);
 		}
 	}
 	xhr.send(params);
 }
 
-// // Called when a message is passed.  We assume that the content script
-// // wants to show the page action.
-// function onRequest(request, sender, sendResponse) {
-//   // Show the page action for the tab that the sender (content script)
-//   // was on.
-//   chrome.pageAction.show(sender.tab.id);
-//   // Return nothing to let the connection be cleaned up.
-//   sendResponse({});
-// };
+//Displays the selected text in the popup.html
+function displayInPopup(text) {
+	var popupWindow = chrome.extension.getViews()[0];
+	popupWindow.document.getElementById('outputDiv').innerHTML = text;
+}
 
-// // Listen for the content script to send a message to the background page.
-// chrome.extension.onRequest.addListener(onRequest);
+//Initiates the displayInEmail method in content_script.js
+function callDisplayImageInEmail(text) {
+	chrome.tabs.getSelected(null, function(tab) {
+		chrome.tabs.sendMessage(tab.id, {message: "replaceText", emailText: text}, function(response) {});
+	});
+}

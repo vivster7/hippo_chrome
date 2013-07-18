@@ -5,21 +5,27 @@ var regex = /@/;
 if (regex.test(document.body.innerText)) {
   // The regular expression produced a match, so notify the background page.
 	chrome.runtime.sendMessage({message: "show"}, function(response) {});
-} else {
-  // No match was found.
 }
 
+//Listen for messages and respond accordingly
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     console.log(sender.tab ?
                 "from a content script:" + sender.tab.url :
                 "from the extension");
-    if (request.message == "grabText")
+
+    if (request.message == "grabText") {
       console.log("stuffz:" + getSelectionHtml());
       sendResponse(getSelectionHtml());
+    }
+
+    if (request.message == "replaceText") {
+      console.log("replacingText");
+      displayImageInEmail(request.emailText);
+    }
   });
 
-
+//Grab the user-selected text
 function getSelectionHtml() {
     var html = "";
     if (typeof window.getSelection != "undefined") {
@@ -37,5 +43,30 @@ function getSelectionHtml() {
         }
     }
     return html
+}
+
+//displays the image in the email
+function displayImageInEmail(imageHtml) {
+  replaceSelectionWithHtml(imageHtml);
+}
+
+//Replaces selected text with html
+function replaceSelectionWithHtml(html) {
+    var range, html;
+    if (window.getSelection && window.getSelection().getRangeAt) {
+        range = window.getSelection().getRangeAt(0);
+        range.deleteContents();
+        var div = document.createElement("div");
+        div.innerHTML = html;
+        var frag = document.createDocumentFragment(), child;
+        while ( (child = div.firstChild) ) {
+            frag.appendChild(child);
+        }
+        range.insertNode(frag);
+    } else if (document.selection && document.selection.createRange) {
+        range = document.selection.createRange();
+        html = (node.nodeType == 3) ? node.data : node.outerHTML;
+        range.pasteHTML(html);
+    }
 }
 
