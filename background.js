@@ -1,5 +1,4 @@
 // Called when the user clicks on the browser action.
-
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.message == "show")
@@ -11,7 +10,6 @@ chrome.runtime.onMessage.addListener(
 function sendTextSelectMessage() {
 	chrome.tabs.getSelected(null, function(tab) {
 	  chrome.tabs.sendMessage(tab.id, {message: "grabText"}, function(response) {
-	  	//alert(response);
 	  	sendToService(response);
 	  });
 	});
@@ -19,7 +17,7 @@ function sendTextSelectMessage() {
 
 //Sends HippoService the selected text
 function sendToService(response) {
-	var params = "email[text]="+response
+	var params = "email[text]="+encodeURIComponent(response)
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST','http://privacy.omadahealth.com:3000/emails', true);
 	xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
