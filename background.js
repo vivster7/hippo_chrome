@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener(
   });
 
 //Sends content_scripts the message to grabText
-function sendTextSelectMessage() {
+function sendSelectedText() {
 	chrome.tabs.getSelected(null, function(tab) {
 	  chrome.tabs.sendMessage(tab.id, {message: "grabText"}, function(response) {
 	  	sendToService(response);

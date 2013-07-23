@@ -1,0 +1,1 @@
+The chrome plugin to use the Hippo service to render the text inside gmail as an image.

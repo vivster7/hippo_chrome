@@ -2,12 +2,12 @@
 document.addEventListener('DOMContentLoaded', function () {
 	button = document.getElementById('hippoButton');
   button.addEventListener('click', function() { 
-		callSendTextSelectMessage();
+		callSendSelectedText();
   });
 });
 
-//Initiates the calls to sendTextSelectMessage in background.js
-function callSendTextSelectMessage() {
+//Initiates the calls to sendSelectedText in background.js
+function callSendSelectedText() {
 	var backgroundWindow = chrome.extension.getBackgroundPage();
-	backgroundWindow.sendTextSelectMessage();
+	backgroundWindow.sendSelectedText();
 }
