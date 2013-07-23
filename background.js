@@ -30,15 +30,15 @@ function sendToService(response) {
 	xhr.send(params);
 }
 
-//Displays the selected text in the popup.html
-function displayInPopup(text) {
-	var popupWindow = chrome.extension.getViews()[0];
-	popupWindow.document.getElementById('outputDiv').innerHTML = text;
-}
-
 //Initiates the displayInEmail method in content_script.js
 function callDisplayImageInEmail(text) {
 	chrome.tabs.getSelected(null, function(tab) {
 		chrome.tabs.sendMessage(tab.id, {message: "replaceText", emailText: text}, function(response) {});
 	});
+}
+
+//Displays the selected text in the popup.html
+function displayInPopup(html) {
+	var popupWindow = chrome.extension.getViews()[0];
+	popupWindow.document.getElementById('outputDiv').innerHTML = html;
 }
