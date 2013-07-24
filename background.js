@@ -43,11 +43,3 @@ function callDisplayImageInEmail(text) {
 		chrome.tabs.sendMessage(tab.id, {message: "replaceText", emailText: text}, function(response) {});
 	});
 }
-
-//Displays the selected text in the popup.html
-//This is a bad method because it requires the popup window to stay open
-//If the user clicks out of the popup window, it will not load.
-function displayInPopup(html) {
-	var popupWindow = chrome.extension.getViews()[0];
-	popupWindow.document.getElementById('outputDiv').innerHTML = html;
-}

@@ -10,17 +10,11 @@ if (regex.test(document.body.innerText)) {
 //Listen for messages and respond accordingly
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    console.log(sender.tab ?
-                "from a content script:" + sender.tab.url :
-                "from the extension");
-
     if (request.message == "grabText") {
-      console.log("stuffz:" + getSelectionHtml());
       sendResponse(getSelectionHtml());
     }
     if (request.message == "replaceText") {
-      console.log("replacingText");
-      displayImageInEmail(request.emailText);
+      replaceSelectionWithHtml(request.emailText);
     }
   });
 
