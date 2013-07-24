@@ -17,14 +17,21 @@ function sendSelectedText() {
 
 //Sends HippoService the selected text
 function sendToService(response) {
-	var params = "email[text]="+encodeURIComponent(response)
+	var senderEmail = response.email
+	var html = response.html
+	var params = "email[text]="+encodeURIComponent(html)+"&email[account]="+encodeURIComponent(senderEmail);
 	var xhr = new XMLHttpRequest();
-	xhr.open('POST','http://privacy.omadahealth.com:3000/emails', true);
+	xhr.open('POST','http://localhost:3000/emails', true);
+	// xhr.open('POST','http://privacy.omadahealth.com:3000/emails', true);
 	xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState == 4 && xhr.status == 200) {
-			callDisplayImageInEmail(xhr.responseText);
+			if (xhr.responseText == "http://localhost:3000/auth/gplus") {
+				chrome.tabs.create({url:xhr.responseText});
+			} else {
+				callDisplayImageInEmail(xhr.responseText);
+			}
 		}
 	}
 	xhr.send(params);
@@ -38,6 +45,8 @@ function callDisplayImageInEmail(text) {
 }
 
 //Displays the selected text in the popup.html
+//This is a bad method because it requires the popup window to stay open
+//If the user clicks out of the popup window, it will not load.
 function displayInPopup(html) {
 	var popupWindow = chrome.extension.getViews()[0];
 	popupWindow.document.getElementById('outputDiv').innerHTML = html;

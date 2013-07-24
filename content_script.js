@@ -18,15 +18,16 @@ chrome.runtime.onMessage.addListener(
       console.log("stuffz:" + getSelectionHtml());
       sendResponse(getSelectionHtml());
     }
-
     if (request.message == "replaceText") {
       console.log("replacingText");
       displayImageInEmail(request.emailText);
     }
   });
 
-//Grab the user-selected text
+
+//Grab the user-selected text and the sender's email
 function getSelectionHtml() {
+    var senderEmail = document.getElementsByClassName('gbps2')[0].innerHTML;
     var html = "";
     if (typeof window.getSelection != "undefined") {
         var sel = window.getSelection();
@@ -42,7 +43,7 @@ function getSelectionHtml() {
             html = document.selection.createRange().htmlText;
         }
     }
-    return html
+    return {html: html, email: senderEmail}
 }
 
 //displays the image in the email
