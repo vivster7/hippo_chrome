@@ -14,7 +14,7 @@ chrome.runtime.onMessage.addListener(
       sendResponse(getSelectionHtml());
     }
     if (request.message == "replaceText") {
-      replaceSelectionWithHtml(request.emailText);
+      displayImageInEmail(request.emailText);
     }
   });
 
