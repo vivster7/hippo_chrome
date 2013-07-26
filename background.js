@@ -27,11 +27,7 @@ function sendToService(response) {
 
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState == 4 && xhr.status == 200) {
-			if (xhr.responseText == "http://localhost:3000/auth/gplus") {
-				chrome.tabs.create({url:xhr.responseText});
-			} else {
 				callDisplayImageInEmail(xhr.responseText);
-			}
 		}
 	}
 	xhr.send(params);
