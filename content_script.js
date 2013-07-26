@@ -21,7 +21,6 @@ chrome.runtime.onMessage.addListener(
 
 //Grab the user-selected text and the sender's email
 function getSelectionHtml() {
-    var senderEmail = document.getElementsByClassName('gbps2')[0].innerHTML;
     var html = "";
     if (typeof window.getSelection != "undefined") {
         var sel = window.getSelection();
@@ -37,7 +36,7 @@ function getSelectionHtml() {
             html = document.selection.createRange().htmlText;
         }
     }
-    return {html: html, email: senderEmail}
+    return {html: html}
 }
 
 //displays the image in the email
