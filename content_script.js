@@ -1,6 +1,80 @@
+$(window).load(function() {
+    console.log($('.no').filter(function() { return $(this).css('float') == 'right'; })[0]);
+    setTimeout(initializeObserver, 5000);
+
+    function initializeObserver() {
+    observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) { 
+
+            if ( $('.aDj').length && !$('.aDj:last').hasClass('hasSecureBar')) {
+                $('.aDj:last').addClass('hasSecureBar');
+                $('.aDj:last').append('<div><button type="button">Send Securely</button></div>');
+                console.log('bar needs to be inserted');
+            } else {
+                console.log('nothing to do hereee');
+            }
+            console.log(document.getElementsByClassName('aDj').length); 
+        }); 
+    });
+
+    target = document.getElementsByClassName("no")[2];
+    observer.observe(target, {childList: true});
+    }   
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //@ seems to be in all gmail pages while loading..
 var regex = /@/;
-
 // Test the text of the body element against our regular expression.
 if (regex.test(document.body.innerText)) {
   // The regular expression produced a match, so notify the background page.

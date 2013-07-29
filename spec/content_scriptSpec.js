@@ -13,4 +13,5 @@ describe("content_script", function() {
 			expect(true).toEqual(true);
 		});
 	});
+	
 });
