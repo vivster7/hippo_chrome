@@ -1,34 +1,17 @@
 $(window).load(function() {
-    //This timeout lets gmail load before loading the JS.
+     chrome.runtime.sendMessage({message: "show"}, function(response) {});
+
+    //This timeout lets gmail load before loading the content_script.
     setTimeout(initializeObserver, 1000);
 
     function initializeObserver() {
-        //Naming DOM elements
-        // containerForAllCompositions = getContainerForAllCompositions();
-        // containerForMostRecentComposition = $('AD:last'); //This is scope
+        var containerForAllCompositions = $('.no')[2];
+        var containerForMostRecentComposition; //This is usually the scope for functions
 
-        secureBar = '<div class="aDh"><table><tbody><tr><td><button type="button" class="convert T-I J-J5-Ji aoO T-I-KE L3">Convert</button></td><td><button type="button" class="sendSecurely T-I J-J5-Ji aoO T-I-atl">Convert+Send</button></td></tr></tbody></table></div>'
         observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) { 
+                containerForMostRecentComposition = $('.AD:last'); 
                 appendSecureBar(containerForMostRecentComposition);
-                if ($('.aDj').length && !$('.aDj:last').hasClass('hasSecureBar')) {
-                    $('.aDj:last').addClass('hasSecureBar');
-                    $('.aDj:last').append(secureBar);
-                    $('.convert:last').click(function() {
-                        window.inputArea = $(this).parentsUntil( $(".iN") ).find( $(".Am.Al.editable") );
-                        html = window.inputArea.html();
-                        chrome.runtime.sendMessage({message: "convert", html: html}, function(response){});
-                    });
-                    $('.sendSecurely:last').click(function() {
-                        window.inputArea = $(this).parentsUntil( $(".iN") ).find( $(".Am.Al.editable") );
-                        html = window.inputArea.html();
-                        chrome.runtime.sendMessage({message: "convert", html: html}, function(response){});
-                        minimizeButton = window.inputArea.parentsUntil( $('.Hd') ).parent().find( $('.Hl') );
-                        window.sendButton = window.inputArea.parentsUntil( $('.Hd') ).find( $('.T-I.J-J5-Ji.aoO.T-I-atl.L3') );
-                        simulateGmailClick(minimizeButton);
-
-                    });
-                }
             }); 
         });
 
@@ -36,53 +19,57 @@ $(window).load(function() {
     }   
 });
 
-// function appendSecureBar(scope) {
-//     //Naming DOM elements
-//     barWithSendButton = scope.find('.aDj');
-//     barWithConvertButton = '<div class="aDh"><table><tbody><tr><td><button type="button" class="convert T-I J-J5-Ji aoO T-I-KE L3">Convert</button></td><td><button type="button" class="sendSecurely T-I J-J5-Ji aoO T-I-atl">Convert+Send</button></td></tr></tbody></table></div>'
-    
-//     if (scope.length && !scope.hasClass('hasBarWithConvertButton')) {
-//         scope.addClass('hasBarWithConvertButton');
-//         barWithSendButton.append(barWithConvertButton);
-//         attachButtonListeners(scope);
-//     }
-// }
+function appendSecureBar(scope) {
+    var barWithSendButton = scope.find('.aDj');
+    var barWithConvertButton = '<div class="aDh"><table><tbody><tr><td><button type="button" class="convert T-I J-J5-Ji aoO T-I-KE L3">Convert</button></td><td><button type="button" class="sendSecurely T-I J-J5-Ji aoO T-I-atl">Convert+Send</button></td></tr></tbody></table></div>'
+    if (scope && !scope.hasClass('hasBarWithConvertButton')) {
+        scope.addClass('hasBarWithConvertButton');
+        barWithSendButton.append(barWithConvertButton);
+        attachButtonListeners(scope);
+    }
+}
 
-// function getContainerForAllCompositions() {
-//    $('.no').filter(function() {
-//         return $(this).css('float') == 'right'
-//     }); 
-// }
+function attachButtonListeners(scope) {
+    var convertButton        = scope.find('.convert');
+    var convertAndSendButton = scope.find('.sendSecurely');
+    var minimizeButton       = scope.find('.Hl');
+    window.sendButton        = scope.find('.T-I.J-J5-Ji.aoO.T-I-atl.L3');
+    window.inputArea         = scope.find('.Am.Al.editable');
 
-// //@ seems to be in all gmail pages while loading..
-// var regex = /@/;
-// // Test the text of the body element against our regular expression.
-// if (regex.test(document.body.innerText)) {
-//   // The regular expression produced a match, so notify the background page.
-// 	chrome.runtime.sendMessage({message: "show"}, function(response) {});
-// }
+    convertButton.click(function() {
+        chrome.runtime.sendMessage({message: "convert", html: window.inputArea.html()}, function(response){});
+    });
+
+    convertAndSendButton.click(function() {
+        chrome.runtime.sendMessage({message: "convertAndSend", html: window.inputArea.html()}, function(response){});
+        simulateGmailClick(minimizeButton)
+    });
+}
+
 
 //Listen for messages and respond accordingly
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    // if (request.message == "grabText") {
-    //   sendResponse(getSelectionHtml());
-    // }
-    if (request.message == "replaceText") {
-      displayImageInEmail(request.emailText);
+    if (request.message == "displayImage") {
+      displayImage(request.emailText);
+    }
+    if (request.message == "sendEmail") {
+      sendEmail(request.emailText);
     }
   });
 
-
-//displays the image in the email
-function displayImageInEmail(imageHtml) {
-    window.inputArea.html(imageHtml);
+function sendEmail(imageHTML) {
+    displayImage(imageHTML);
     window.sendButton.click();
 }
 
+function displayImage(imageHtml) {
+    window.inputArea.html(imageHtml);
+}
+
+//This function is necessary to mimic a click for
+//some gmail UI elements such as minimization.
 function simulateGmailClick(jqueryElement) {
-    // Trigger a click on Gmail UI button from Javascript
-    // Gmail UI click is generated by MouseUp and MouseDown events
     var evt1 = document.createEvent("MouseEvents");
     var evt2 = document.createEvent("MouseEvents");
     evt1.initMouseEvent("mousedown", true, true, window, 1, 1, 1, 1, 1, false, false, false, false, 0, null);
