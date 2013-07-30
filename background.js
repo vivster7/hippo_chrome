@@ -1,25 +1,28 @@
 // Called when the user clicks on the browser action.
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (request.message == "show")
-  		chrome.pageAction.show(sender.tab.id);
-      sendResponse({});
+    // if (request.message == "show") {
+  		// chrome.pageAction.show(sender.tab.id);
+    //   sendResponse({});
+    // }
+    if (request.message == "convert") {
+			sendToService(request.html);
+    	sendResponse({});
+    }
   });
 
 //Sends content_scripts the message to grabText
-function sendSelectedText() {
-	chrome.tabs.getSelected(null, function(tab) {
-	  chrome.tabs.sendMessage(tab.id, {message: "grabText"}, function(response) {
-	  	sendToService(response);
-	  });
-	});
-}
+// function sendSelectedText() {
+// 	chrome.tabs.getSelected(null, function(tab) {
+// 	  chrome.tabs.sendMessage(tab.id, {message: "grabText"}, function(response) {
+// 	  	sendToService(response);
+// 	  });
+// 	});
+// }
 
 //Sends HippoService the selected text
-function sendToService(response) {
-	var senderEmail = response.email
-	var html = response.html
-	var params = "email[text]="+encodeURIComponent(html)+"&email[account]="+encodeURIComponent(senderEmail);
+function sendToService(html) {
+	var params = "email[text]="+encodeURIComponent(html);
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST','http://localhost:3000/emails', true);
 	// xhr.open('POST','http://privacy.omadahealth.com:3000/emails', true);
