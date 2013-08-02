@@ -19,7 +19,8 @@ chrome.runtime.onMessage.addListener(
 function sendToService(html, shouldEmail) {
 	var params = "email[text]="+encodeURIComponent(html);
 	var xhr = new XMLHttpRequest();
-	xhr.open('POST','http://localhost:3000/emails', true);
+  // xhr.open('POST','http://hyppo.herokuapp.com/emails', true);
+  xhr.open('POST','http://localhost:3000/emails', true);
 	// xhr.open('POST','http://privacy.omadahealth.com:3000/emails', true);
 	xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 

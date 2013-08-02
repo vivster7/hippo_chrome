@@ -65,6 +65,16 @@ function sendEmail(imageHTML) {
 
 function displayImage(imageHtml) {
     window.inputArea.html(imageHtml);
+    add_footer();
+}
+
+function add_footer() {
+    var link_start = window.inputArea.html().indexOf("http")
+    var link_end = window.inputArea.html().lastIndexOf(".jpg") + 4
+    var link = window.inputArea.html().substring(link_start, link_end)
+    
+    var footer = "<br /><br />Having trouble viewing the image? <a href='"+link+"'>Click here</a>";
+    window.inputArea.html(window.inputArea.html()+footer);
 }
 
 //This function is necessary to mimic a click for
