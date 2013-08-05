@@ -1,23 +1,59 @@
+//Display icon to signify the app is working.
 $(window).load(function() {
-     chrome.runtime.sendMessage({message: "show"}, function(response) {});
-
-    //This timeout lets gmail load before loading the content_script.
-    setTimeout(initializeObserver, 1000);
-
-    function initializeObserver() {
-        var containerForAllCompositions = $('.no')[2];
-        var containerForMostRecentComposition; //This is usually the scope for functions
-
-        observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) { 
-                containerForMostRecentComposition = $('.AD:last'); 
-                appendSecureBar(containerForMostRecentComposition);
-            }); 
-        });
-
-        observer.observe(containerForAllCompositions, {childList: true});
-    }   
+    attachExtensionListeners();
+    displayIcon();
+    initializeCompositionObserver();
+    attachToExisitingCompositions();
 });
+
+function attachToExisitingCompositions() {
+    var containerForAllCompositions = $('.dw').find( $('.no') );
+    if (containerForAllCompositions.length > 1) {
+        containerForAllCompositions.each(function(index, element) {
+            if ($(this).children().length == 2) {
+                var scope = $(this).find( $('.AD') );
+                appendSecureBar(scope);
+            }
+        });
+    }
+}
+
+//Listen for messages and respond accordingly
+function attachExtensionListeners() {
+    chrome.runtime.onMessage.addListener(
+      function(request, sender, sendResponse) {
+        if (request.message == "displayImage") {
+          displayImage(request.emailText);
+        }
+        if (request.message == "sendEmail") {
+          sendEmail(request.emailText);
+        }
+        if (request.message == "reloadObserver") {
+            initializeCompositionObserver();
+            attachToExisitingCompositions();
+        }
+    });
+}
+
+function displayIcon() {
+    chrome.runtime.sendMessage({message: "show"}, function(response) {});
+}
+
+function initializeCompositionObserver() {
+    var containerForAllCompositions = $('.dw').find( $('.no') )[0];
+    var containerForMostRecentComposition; //This is usually the scope for functions
+
+    observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) { 
+            containerForMostRecentComposition = $('.AD:last'); 
+            appendSecureBar(containerForMostRecentComposition);
+        }); 
+    });
+    
+    try {
+        observer.observe(containerForAllCompositions, {childList: true});
+    } catch(err) { }
+}
 
 function appendSecureBar(scope) {
     var barWithSendButton = scope.find('.aDj');
@@ -45,18 +81,6 @@ function attachButtonListeners(scope) {
         simulateGmailClick(minimizeButton)
     });
 }
-
-
-//Listen for messages and respond accordingly
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    if (request.message == "displayImage") {
-      displayImage(request.emailText);
-    }
-    if (request.message == "sendEmail") {
-      sendEmail(request.emailText);
-    }
-  });
 
 function sendEmail(imageHTML) {
     displayImage(imageHTML);
@@ -90,3 +114,4 @@ function simulateGmailClick(jqueryElement) {
       element.dispatchEvent(evt2);
     });
 }
+

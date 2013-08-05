@@ -39,9 +39,16 @@ function callDisplayImage(text) {
 	});
 }
 
-//Initiates the displayInEmail method in content_script.js
+//Initiates the callSendEmail method in content_script.js
 function callSendEmail(text) {
-	chrome.tabs.getSelected(null, function(tab) {
-		chrome.tabs.sendMessage(tab.id, {message: "sendEmail", emailText: text}, function(response) {});
-	});
+  chrome.tabs.getSelected(null, function(tab) {
+    chrome.tabs.sendMessage(tab.id, {message: "sendEmail", emailText: text}, function(response) {});
+  });
+}
+
+//Initiates the initializeCompositionObserver method in content_script.js
+function callReloadObserver() {
+  chrome.tabs.getSelected(null, function(tab) {
+    chrome.tabs.sendMessage(tab.id, {message: "reloadObserver"}, function(response) {});
+  });
 }
