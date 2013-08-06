@@ -2,20 +2,16 @@
 $(window).load(function() {
     attachExtensionListeners();
     displayIcon();
-    initializeCompositionObserver();
-    attachToExisitingCompositions();
+    setInterval(findSendBarAndAttachSecureBar, 1000);
 });
 
-function attachToExisitingCompositions() {
-    var containerForAllCompositions = $('.dw').find( $('.no') );
-    if (containerForAllCompositions.length > 1) {
-        containerForAllCompositions.each(function(index, element) {
-            if ($(this).children().length == 2) {
-                var scope = $(this).find( $('.AD') );
-                appendSecureBar(scope);
-            }
-        });
-    }
+function findSendBarAndAttachSecureBar() {
+    var sendButton = $('.T-I.J-J5-Ji.aoO.T-I-atl.L3');
+    var sendBar = sendButton.parentsUntil('.aDj', '.aDh');
+    $.each(sendBar, function(index, value) {
+        var scope = $(this).parents().first();
+        appendSecureBar(scope);
+    });
 }
 
 //Listen for messages and respond accordingly
@@ -31,6 +27,7 @@ function attachExtensionListeners() {
         if (request.message == "reloadObserver") {
             initializeCompositionObserver();
             attachToExisitingCompositions();
+            initializeReplyObserver();
         }
     });
 }
@@ -39,29 +36,14 @@ function displayIcon() {
     chrome.runtime.sendMessage({message: "show"}, function(response) {});
 }
 
-function initializeCompositionObserver() {
-    var containerForAllCompositions = $('.dw').find( $('.no') )[0];
-    var containerForMostRecentComposition; //This is usually the scope for functions
-
-    observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) { 
-            containerForMostRecentComposition = $('.AD:last'); 
-            appendSecureBar(containerForMostRecentComposition);
-        }); 
-    });
-    
-    try {
-        observer.observe(containerForAllCompositions, {childList: true});
-    } catch(err) { }
-}
-
 function appendSecureBar(scope) {
-    var barWithSendButton = scope.find('.aDj');
-    var barWithConvertButton = '<div class="aDh"><table><tbody><tr><td><button type="button" class="convert T-I J-J5-Ji aoO T-I-KE L3">Convert</button></td><td><button type="button" class="sendSecurely T-I J-J5-Ji aoO T-I-atl">Convert+Send</button></td></tr></tbody></table></div>'
+    var barWithSendButton = scope
+    var barWithConvertButton = '<div class="aDh fake"><table><tbody><tr><td><div><button type="button" class="convert T-I J-J5-Ji aoO T-I-KE L3">Convert</button></div></td><td><div><button type="button" class="sendSecurely T-I J-J5-Ji aoO T-I-atl">Convert+Send</button></div></td></tr></tbody></table></div>'
     if (scope && !scope.hasClass('hasBarWithConvertButton')) {
         scope.addClass('hasBarWithConvertButton');
         barWithSendButton.append(barWithConvertButton);
         attachButtonListeners(scope);
+        addBreakingSpace(scope);
     }
 }
 
@@ -80,6 +62,15 @@ function attachButtonListeners(scope) {
         chrome.runtime.sendMessage({message: "convertAndSend", html: window.inputArea.html()}, function(response){});
         simulateGmailClick(minimizeButton)
     });
+}
+
+function addBreakingSpace(scope) {
+    var commentTable = scope.parents('.aoP.HM');
+    if (commentTable && !commentTable.hasClass('hasBreakingSpace')) {
+        commentTable.addClass('hasBreakingSpace');
+        var breakingSpace = '<div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>';
+        commentTable.append(breakingSpace);
+    }
 }
 
 function sendEmail(imageHTML) {
@@ -114,4 +105,3 @@ function simulateGmailClick(jqueryElement) {
       element.dispatchEvent(evt2);
     });
 }
-
