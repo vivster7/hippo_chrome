@@ -48,6 +48,7 @@ function appendSecureBar(scope) {
 }
 
 function attachButtonListeners(scope) {
+    var scope                = scope.parentsUntil('.AD','.nH').last();
     var convertButton        = scope.find('.convert');
     var convertAndSendButton = scope.find('.sendSecurely');
     var minimizeButton       = scope.find('.Hl');
