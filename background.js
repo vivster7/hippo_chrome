@@ -26,7 +26,11 @@ function sendToService(html, shouldEmail) {
 
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState == 4 && xhr.status == 200) {
-			(shouldEmail) ? callSendEmail(xhr.responseText) : callDisplayImage(xhr.responseText); 
+      if (xhr.responseText = "You are not authorized with Hippo.") {
+        chrome.tabs.create( {url: 'http://localhost:3000'} );
+      } else {
+			 (shouldEmail) ? callSendEmail(xhr.responseText) : callDisplayImage(xhr.responseText); 
+      }
 		}
 	}
 	xhr.send(params);
