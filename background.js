@@ -26,12 +26,11 @@ function sendToService(html, shouldEmail) {
 
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState == 4 && xhr.status == 200) {
-      if (xhr.responseText = "You are not authorized with Hippo.") {
-        chrome.tabs.create( {url: 'http://localhost:3000'} );
-      } else {
-			 (shouldEmail) ? callSendEmail(xhr.responseText) : callDisplayImage(xhr.responseText); 
-      }
+      (shouldEmail) ? callSendEmail(xhr.responseText) : callDisplayImage(xhr.responseText); 
 		}
+    if (xhr.readyState == 4 && xhr.status == 401) {
+      chrome.tabs.create( {url:''} )
+    }
 	}
 	xhr.send(params);
 }
@@ -50,9 +49,3 @@ function callSendEmail(text) {
   });
 }
 
-//Initiates the initializeCompositionObserver method in content_script.js
-function callReloadObserver() {
-  chrome.tabs.getSelected(null, function(tab) {
-    chrome.tabs.sendMessage(tab.id, {message: "reloadObserver"}, function(response) {});
-  });
-}
